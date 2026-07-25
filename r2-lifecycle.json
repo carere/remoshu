@@ -1,13 +1,16 @@
 {
-  "Rules": [
+  "rules": [
     {
-      "ID": "expire-cache-after-seven-days",
-      "Status": "Enabled",
-      "Filter": {
-        "Prefix": ""
+      "id": "expire-cache-after-seven-days",
+      "enabled": true,
+      "conditions": {
+        "prefix": ""
       },
-      "Expiration": {
-        "Days": 7
+      "deleteObjectsTransition": {
+        "condition": {
+          "type": "Age",
+          "maxAge": 604800
+        }
       }
     }
   ]
