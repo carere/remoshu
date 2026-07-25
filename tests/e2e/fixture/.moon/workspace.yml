@@ -1,0 +1,18 @@
+projects:
+  fixture: "."
+
+hasher:
+  walkStrategy: "glob"
+
+remote:
+  api: "http"
+  host: "__REMOTE_HOST__"
+  auth:
+    token: "MOON_REMOTE_CACHE_TOKEN"
+  cache:
+    instanceName: "remoshu/e2e"
+    verifyIntegrity: true
+
+vcs:
+  defaultBranch: "main"
+  provider: "github"

@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "remoshu",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-07-25",
+  "workers_dev": true,
+  "minify": true,
+  "observability": {
+    "enabled": true
+  },
+  "r2_buckets": [
+    {
+      "binding": "CACHE_BUCKET",
+      "bucket_name": "remoshu-cache"
+    }
+  ],
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
+  }
+}

@@ -1,0 +1,9 @@
+tasks:
+  build:
+    command: "bash -c 'echo run >> execution.log; mkdir -p dist; cp input.txt dist/output.txt'"
+    inputs:
+      - "input.txt"
+      - "moon.yml"
+    outputs:
+      - "dist/"
+    type: "build"
