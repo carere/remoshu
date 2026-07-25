@@ -9,12 +9,12 @@
   "scripts": {
     "build": "wrangler deploy --dry-run --outdir dist",
     "check": "biome check --no-errors-on-unmatched .",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy && bun run provision:lifecycle",
     "dev": "wrangler dev",
     "fix": "biome check --write --no-errors-on-unmatched .",
     "provision": "bun run provision:bucket && bun run provision:lifecycle",
-    "provision:bucket": "wrangler r2 bucket create remoshu-cache",
-    "provision:lifecycle": "wrangler r2 bucket lifecycle set remoshu-cache --file r2-lifecycle.json",
+    "provision:bucket": "bun scripts/create-bucket.ts",
+    "provision:lifecycle": "bun scripts/configure-lifecycle.ts",
     "test": "bun run test:unit && bun run test:integration",
     "test:e2e": "bun scripts/moon-e2e.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
@@ -33,5 +33,15 @@
     "typescript": "7.0.2",
     "vitest": "4.1.10",
     "wrangler": "4.114.0"
+  },
+  "cloudflare": {
+    "bindings": {
+      "CACHE_BUCKET": {
+        "description": "A dedicated private R2 bucket containing disposable moon cache objects."
+      },
+      "CACHE_TOKEN": {
+        "description": "Generate a long random bearer token and save it. Moon clients must use the same value."
+      }
+    }
   }
 }

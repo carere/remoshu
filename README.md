@@ -2,6 +2,8 @@
 
 A moon HTTP remote cache for Cloudflare Workers and R2.
 
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/carere/remoshu)
+
 Remoshu implements the small HTTP action-cache (AC) and content-addressable-storage (CAS)
 surface used by moon v2. Cache objects are streamed through a Worker into a private R2 bucket,
 authenticated with one bearer token, and expired after seven days by an R2 lifecycle rule.
@@ -10,7 +12,27 @@ The project is intentionally a GitHub template, not a hosted multi-tenant servic
 repository from the template, deploy it into the Cloudflare account of your choice, and point one
 or more moon workspaces at it.
 
-## Deploy
+## One-click deployment
+
+Select **Deploy to Cloudflare** above, then:
+
+1. Authorize Cloudflare to create a repository in your GitHub account and select the destination
+   Cloudflare account.
+2. Choose the repository, Worker, and private R2 bucket names.
+3. Enter a long random value for `CACHE_TOKEN` and save it somewhere secure. Moon clients need this
+   exact value after deployment.
+4. Confirm the deployment.
+
+Cloudflare creates the GitHub repository, provisions and binds the R2 bucket, stores the bearer
+token as a Worker secret, deploys the Worker, and configures Workers Builds for subsequent pushes.
+The deploy command also applies `r2-lifecycle.json` to the selected bucket, expiring cache objects
+after seven days.
+
+When deployment finishes, copy the resulting
+`https://<worker>.<subdomain>.workers.dev` URL and continue with
+[Configure moon](#configure-moon).
+
+## Manual deployment
 
 Prerequisites: a [Cloudflare account](https://dash.cloudflare.com/),
 [Bun 1.3.14](https://bun.sh/), and permission to create Workers, R2 buckets, lifecycle rules, and
@@ -24,8 +46,8 @@ Worker secrets.
    bunx wrangler login
    ```
 
-3. Review the Worker and bucket names in `wrangler.jsonc`. If you rename the bucket, update both
-   the `bucket_name` there and the two `provision:*` scripts in `package.json`.
+3. Review the Worker and bucket names in `wrangler.jsonc`. The lifecycle setup automatically uses
+   the bucket assigned to the `CACHE_BUCKET` binding.
 4. Create the private Standard-class R2 bucket and its seven-day expiration rule:
 
    ```sh
@@ -40,7 +62,7 @@ Worker secrets.
    bunx wrangler secret put CACHE_TOKEN
    ```
 
-6. Deploy the Worker:
+6. Deploy the Worker and re-apply its lifecycle configuration:
 
    ```sh
    bun run deploy
