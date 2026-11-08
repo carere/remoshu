@@ -1,0 +1,13 @@
+$schema: ./cache/schemas/toolchains.json
+
+javascript:
+  packageManager: bun
+  dependencyVersionFormat: workspace
+  inferTasksFromScripts: false
+  syncProjectWorkspaceDependencies: true
+
+# Keep CI and Cloudflare builds independent of a global proto installation.
+bun:
+  version: "1.4.2"
+node:
+  version: "24.21.0"

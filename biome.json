@@ -8,13 +8,17 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "src/**/*.ts",
-      "tests/**/*.ts",
-      "scripts/**/*.ts",
-      "vitest.*.config.ts",
+      "apps/**/*.ts",
+      "apps/**/*.css",
+      "apps/**/*.json",
+      "apps/**/*.jsonc",
+      "services/**/*.ts",
+      "services/**/*.json",
+      "services/**/*.jsonc",
       "*.json",
       "*.jsonc",
-      ".github/**/*.yml"
+      ".github/**/*.yml",
+      "!**/worker-configuration.d.ts"
     ]
   },
   "formatter": {
