@@ -1,0 +1,60 @@
+$schema: ../../.moon/cache/schemas/project.json
+
+language: typescript
+stack: backend
+layer: application
+
+tasks:
+  build:
+    command: bun run build
+    inputs:
+      - "src/**/*"
+      - wrangler.jsonc
+    outputs:
+      - dist
+    type: build
+
+  dev:
+    command: bun run dev
+    preset: server
+    inputs: []
+
+  deploy:
+    command: bun run deploy
+    preset: utility
+
+  types:
+    command: bun run types
+    inputs:
+      - wrangler.jsonc
+    outputs:
+      - worker-configuration.d.ts
+
+  test-unit:
+    command: bun run test:unit
+    inputs:
+      - "src/**/*"
+      - "scripts/**/*"
+      - "tests/unit/**/*"
+      - vitest.unit.config.ts
+      - r2-lifecycle.json
+
+  test-integration:
+    command: bun run test:integration
+    inputs:
+      - "src/**/*"
+      - "tests/integration/**/*"
+      - vitest.integration.config.ts
+      - wrangler.jsonc
+    options:
+      cache: false
+
+  test-e2e:
+    command: bun run test:e2e
+    inputs:
+      - "src/**/*"
+      - scripts/moon-e2e.ts
+      - "tests/e2e/**/*"
+      - wrangler.jsonc
+    options:
+      cache: false

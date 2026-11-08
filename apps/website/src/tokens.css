@@ -1,0 +1,11 @@
+:root {
+  --paper: #f6f3ec;
+  --ink: #253d34;
+  --muted: #627063;
+  --orange: #d85c3f;
+  --orange-dark: #b24630;
+  --sage: #e8ecdf;
+  --line: #d8dbcf;
+  --sans: "Space Grotesk Variable", sans-serif;
+  --mono: "Geist Mono Variable", monospace;
+}

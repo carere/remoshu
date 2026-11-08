@@ -5,43 +5,31 @@
   "description": "A moon HTTP remote cache for Cloudflare Workers and R2",
   "license": "MIT",
   "type": "module",
-  "packageManager": "bun@1.3.14",
+  "packageManager": "bun@1.4.2",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "wrangler deploy --dry-run --outdir dist",
+    "build": "moon run :build",
     "check": "biome check --no-errors-on-unmatched .",
-    "deploy": "wrangler deploy && bun run provision:lifecycle",
-    "dev": "wrangler dev",
+    "deploy": "moon run cache:deploy",
+    "deploy:website": "moon run website:deploy",
+    "dev": "moon run website:dev",
+    "dev:cache": "moon run cache:dev",
     "fix": "biome check --write --no-errors-on-unmatched .",
-    "provision": "bun run provision:bucket && bun run provision:lifecycle",
-    "provision:bucket": "bun scripts/create-bucket.ts",
-    "provision:lifecycle": "bun scripts/configure-lifecycle.ts",
-    "test": "bun run test:unit && bun run test:integration",
-    "test:e2e": "bun scripts/moon-e2e.ts",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:unit": "vitest run --config vitest.unit.config.ts",
-    "typecheck": "tsc --noEmit",
-    "types": "wrangler types"
-  },
-  "dependencies": {
-    "effect": "4.0.0-beta.101"
+    "provision": "bun run --cwd services/cache provision",
+    "test": "moon run cache:test-unit cache:test-integration",
+    "test:e2e": "moon run cache:test-e2e",
+    "test:integration": "moon run cache:test-integration",
+    "test:unit": "moon run cache:test-unit",
+    "typecheck": "moon run :typecheck",
+    "types": "moon run cache:types"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.5",
-    "@cloudflare/vitest-pool-workers": "0.18.8",
-    "@effect/vitest": "4.0.0-beta.101",
-    "@types/bun": "1.3.14",
-    "typescript": "7.0.2",
-    "vitest": "4.1.10",
-    "wrangler": "4.114.0"
-  },
-  "cloudflare": {
-    "bindings": {
-      "CACHE_BUCKET": {
-        "description": "A dedicated private R2 bucket containing disposable moon cache objects."
-      },
-      "CACHE_TOKEN": {
-        "description": "Generate a long random bearer token and save it. Moon clients must use the same value."
-      }
-    }
+    "@moonrepo/cli": "2.5.4",
+    "typescript": "7.0.2"
   }
 }
