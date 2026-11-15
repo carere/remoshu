@@ -1,0 +1,12 @@
+$schema: ./cache/schemas/workspace.json
+
+projects:
+  - "apps/*/moon.yml"
+  - "services/*/moon.yml"
+  - "packages/*/moon.yml"
+
+vcs:
+  defaultBranch: main
+  provider: github
+
+telemetry: false

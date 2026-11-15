@@ -1,8 +1,12 @@
 # Remoshu
 
+<img src="apps/website/public/brand/remoshu-mark-v2.png" width="88" alt="Remoshu remote-cache logo" />
+
+[Website](https://remoshu.carere.dev) · [Cloudflare build setup](docs/cloudflare.md) · [Brand](docs/brand.md)
+
 A moon HTTP remote cache for Cloudflare Workers and R2.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/carere/remoshu)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/carere/remoshu/tree/main/services/cache)
 
 Remoshu implements the small HTTP action-cache (AC) and content-addressable-storage (CAS)
 surface used by moon v2. Cache objects are streamed through a Worker into a private R2 bucket,
@@ -35,19 +39,20 @@ When deployment finishes, copy the resulting
 ## Manual deployment
 
 Prerequisites: a [Cloudflare account](https://dash.cloudflare.com/),
-[Bun 1.3.14](https://bun.sh/), and permission to create Workers, R2 buckets, lifecycle rules, and
+[Bun 1.4.2](https://bun.sh/), and permission to create Workers, R2 buckets, lifecycle rules, and
 Worker secrets.
 
 1. On GitHub, select **Use this template**, then clone your new repository.
-2. Install the pinned dependencies and authenticate Wrangler:
+2. Install the pinned workspace dependencies, then work from the cache service and authenticate Wrangler:
 
    ```sh
    bun install --frozen-lockfile
+   cd services/cache
    bunx wrangler login
    ```
 
-3. Review the Worker and bucket names in `wrangler.jsonc`. The lifecycle setup automatically uses
-   the bucket assigned to the `CACHE_BUCKET` binding.
+3. Review the Worker and bucket names in `services/cache/wrangler.jsonc` (relative to the repository
+   root). The lifecycle setup automatically uses the bucket assigned to the `CACHE_BUCKET` binding.
 4. Create the private Standard-class R2 bucket and its seven-day expiration rule:
 
    ```sh
@@ -159,32 +164,51 @@ contains request, response, auth outcome, cache instance/kind/digest/outcome/siz
 colo and Worker version, and trace/span IDs. Authorization values, request bodies, response bodies,
 and arbitrary headers are never logged.
 
-Cloudflare observability is enabled in `wrangler.jsonc`. Inspect events in Workers Logs or route
+Cloudflare observability is enabled in `services/cache/wrangler.jsonc`. Inspect events in Workers Logs or route
 them through the OpenTelemetry support already built into Effect if your deployment needs an
 external backend.
 
-## Development
+## Workspace and development
 
-Copy `.dev.vars.example` to `.dev.vars`, replace the token, then run:
+The Bun + Moon v2 monorepo follows the `apps/*`, `services/*`, and `packages/*` layout:
 
-```sh
-bun install --frozen-lockfile
-bun run dev
+```text
+apps/website/       Static Vite + TypeScript website and generated logo
+services/cache/     Standalone cache Worker, R2 lifecycle scripts, and tests
+.moon/              Shared tasks and pinned JavaScript toolchains
+.prototools         Bun, Node, and Moon versions for proto users
 ```
 
-Quality checks:
+Install dependencies from the repository root with `bun install --frozen-lockfile`. The pinned
+`@moonrepo/cli` dependency supplies Moon; a global installation is optional. Proto users can run
+`proto use` to install the same versions used in delimoov's workspace.
 
 ```sh
+bun run dev          # website
+bun run dev:cache    # cache Worker (uses services/cache/.dev.vars)
+bun run build        # both projects through Moon
 bun run check
 bun run typecheck
-bun run test:unit
-bun run test:integration
+bun run test
 bun run test:e2e
-bun run build
 ```
 
-The integration suite runs the Worker against local R2. The end-to-end suite requires moon v2.4.5
-on `PATH` and proves a genuine remote save-and-restore after deleting moon's local cache.
+For local cache development, copy `services/cache/.dev.vars.example` to
+`services/cache/.dev.vars` and replace the development token. Keep that file out of Git.
+
+Tasks can also be addressed directly, for example `bunx moon run website:build` or
+`bunx moon run cache:test-unit`. Build tasks declare their source inputs and output directories so
+Moon can cache them. Integration and end-to-end tests always run against local workerd/R2. Remote
+caching is not configured for this workspace by default, so building the cache does not require an
+already-deployed cache or a cache token.
+
+The end-to-end suite uses the workspace's pinned moon v2.5.4 client and proves a genuine remote
+save-and-restore after deleting moon's local cache. GitHub Actions validates both projects; deployment
+runs through Cloudflare Workers Builds. See [Cloudflare setup](docs/cloudflare.md) for the separate
+website and cache build commands and the `remoshu.carere.dev` custom domain.
+
+The [brand notes](docs/brand.md) include the generated logo and prompt. The website serves its fonts
+locally and uses no runtime API or cache credentials.
 
 ## GitHub template setting
 

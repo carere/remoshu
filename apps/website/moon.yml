@@ -1,0 +1,34 @@
+$schema: ../../.moon/cache/schemas/project.json
+
+language: typescript
+stack: frontend
+layer: application
+
+tasks:
+  build:
+    command: bun run build
+    inputs:
+      - index.html
+      - "src/**/*"
+      - "public/**/*"
+    outputs:
+      - dist
+    type: build
+
+  dev:
+    command: bun run dev
+    preset: server
+    inputs: []
+
+  preview:
+    command: bun run preview
+    deps:
+      - ~:build
+    preset: server
+    inputs: []
+
+  deploy:
+    command: bun run deploy
+    deps:
+      - ~:build
+    preset: utility

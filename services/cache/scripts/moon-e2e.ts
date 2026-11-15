@@ -9,9 +9,14 @@ const host = `http://127.0.0.1:${port}`;
 const workspace = await mkdtemp(join(tmpdir(), "remoshu-moon-e2e-"));
 
 const run = async (command: string[], cwd: string, env?: Record<string, string>) => {
+  // A nested moon invocation must discover the fixture workspace, not inherit
+  // MOON_WORKSPACE_ROOT and the task context from the parent monorepo pipeline.
+  const isolatedEnv = Object.fromEntries(
+    Object.entries(Bun.env).filter(([key]) => !key.startsWith("MOON_")),
+  );
   const process = Bun.spawn(command, {
     cwd,
-    env: { ...Bun.env, ...env },
+    env: { ...isolatedEnv, ...env },
     stdout: "pipe",
     stderr: "pipe",
   });

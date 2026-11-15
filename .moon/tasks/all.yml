@@ -1,0 +1,27 @@
+$schema: ../cache/schemas/tasks.json
+
+implicitInputs:
+  - /bun.lock
+  - /package.json
+  - /.prototools
+  - /biome.json
+  - package.json
+  - tsconfig.json
+
+tasks:
+  check:
+    command: biome check --no-errors-on-unmatched .
+    inputs:
+      - "**/*"
+
+  fix:
+    command: biome check --write --no-errors-on-unmatched .
+    options:
+      cache: false
+
+  typecheck:
+    command: tsc --noEmit
+    inputs:
+      - "**/*.ts"
+      - "**/*.json"
+      - "**/*.jsonc"
